@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Application</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.quiz-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+}
+
+.question {
+  margin: 20px 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the options vertically */
+  margin-bottom: 20px;
+}
+
+.options label {
+  display: flex;
+  align-items: center;  /* Align radio buttons and text horizontally */
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 200px;
+  margin: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+label input {
+  margin-right: 10px; /* Adds space between the radio button and the label */
+}
+
+
+button {
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+  <div class="quiz-container">
+    <h1>Quiz</h1>
+    <div id="quiz"></div>
+    <button id="submit" onclick="submitQuiz()">Submit Quiz</button>
+    <div id="result"></div>
+  </div>
+
+  <script src="script.js"></script>
+const quizData = [
+  {
+    question: "What is the capital of France?",
+    a: "Berlin",
+    b: "Madrid",
+    c: "Paris",
+    d: "Lisbon",
+    correct: "c",
+  },
+  {
+    question: "Which language is used for web development?",
+    a: "Python",
+    b: "JavaScript",
+    c: "C++",
+    d: "Java",
+    correct: "b",
+  },
+  {
+    question: "Who developed the theory of relativity?",
+    a: "Isaac Newton",
+    b: "Albert Einstein",
+    c: "Galileo Galilei",
+    d: "Nikola Tesla",
+    correct: "b",
+  },
+  {
+    question: "What is the largest planet in our solar system?",
+    a: "Earth",
+    b: "Venus",
+    c: "Mars",
+    d: "Jupiter",
+    correct: "d",
+  },
+  {
+    question: "Which country hosted the 2016 Summer Olympics?",
+    a: "China",
+    b: "USA",
+    c: "Brazil",
+    d: "Russia",
+    correct: "c",
+  },
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuiz() {
+  const quizContainer = document.getElementById("quiz");
+  const currentQuizData = quizData[currentQuestion];
+
+  quizContainer.innerHTML = `
+    <div class="question">${currentQuizData.question}</div>
+    <div class="options">
+      <label><input type="radio" name="answer" value="a"> ${currentQuizData.a}</label>
+      <label><input type="radio" name="answer" value="b"> ${currentQuizData.b}</label>
+      <label><input type="radio" name="answer" value="c"> ${currentQuizData.c}</label>
+      <label><input type="radio" name="answer" value="d"> ${currentQuizData.d}</label>
+    </div>
+    <div id="result"></div>
+  `;
+}
+
+function getSelected() {
+  const options = document.getElementsByName("answer");
+  let selectedAnswer = undefined;
+
+  options.forEach((option) => {
+    if (option.checked) {
+      selectedAnswer = option.value;
+    }
+  });
+
+  return selectedAnswer;
+}
+
+function submitQuiz() {
+  const selectedAnswer = getSelected();
+  const resultContainer = document.getElementById("result");
+
+  if (!selectedAnswer) {
+    resultContainer.innerHTML = "Please select an answer!";
+    return;
+  }
+
+  const currentQuizData = quizData[currentQuestion];
+  if (selectedAnswer === currentQuizData.correct) {
+    score++;
+    resultContainer.innerHTML = "Correct!";
+  } else {
+    resultContainer.innerHTML = `Wrong! Correct answer: ${currentQuizData[currentQuizData.correct]}`;
+  }
+
+  currentQuestion++;
+
+  if (currentQuestion < quizData.length) {
+    setTimeout(() => {
+      resultContainer.innerHTML = "";
+      loadQuiz(); // Automatically load the next question
+    }, 1000); // Small delay for feedback
+  } else {
+    setTimeout(() => {
+      showFinalResult();
+    }, 1000);
+  }
+}
+
+function showFinalResult() {
+  const quizContainer = document.getElementById("quiz");
+  const resultContainer = document.getElementById("result");
+
+  quizContainer.innerHTML = "";
+  resultContainer.innerHTML = "";
+
+  let finalMessage = "";
+
+  if (score >= 4) {
+    finalMessage = `Congratulations! Your score is ${score}/${quizData.length}.`;
+  } else {
+    finalMessage = `Better luck next time! Your score is ${score}/${quizData.length}.`;
+  }
+
+  quizContainer.innerHTML = `<h2>${finalMessage}</h2>`;
+}
+
+// Listen for a change event to automatically submit on selecting an option
+document.addEventListener("change", (event) => {
+  if (event.target.name === "answer") {
+    submitQuiz();
+  }
+});
+
+// Initialize the quiz
+loadQuiz();
+
+</body>
+</html>
